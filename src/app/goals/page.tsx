@@ -1,10 +1,12 @@
-import Stepper from '../components/Stepper';
+import NavigationStepper from '../components/NavigationStepper';
 
-export default function Goals() {
+const Goals = () => {
   return (
     <div>
-      <Stepper currentStep={2} />
+      <NavigationStepper activeStep={3} />
       {/* Aquí va el contenido de las metas */}
     </div>
   );
 }
+
+export default Goals;

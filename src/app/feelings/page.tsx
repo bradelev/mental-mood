@@ -10,7 +10,7 @@ import SentimentDissatisfiedIcon from '@mui/icons-material/SentimentDissatisfied
 import SentimentSatisfiedIcon from '@mui/icons-material/SentimentSatisfied';
 import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
 import SentimentVerySatisfiedIcon from '@mui/icons-material/SentimentVerySatisfied';
-import Stepper from '../components/Stepper';
+import NavigationStepper from '../components/NavigationStepper';
 
 const icons = [
   { icon: SentimentVeryDissatisfiedIcon, color: 'text-red-500' },
@@ -23,7 +23,7 @@ const icons = [
 
 const tabs = ['work', 'health', 'relations', 'finance'];
 
-export default function Home() {
+const Home = () => {
   const [activeTab, setActiveTab] = useState('work');
   const [selectedIcon, setSelectedIcon] = useState<number>(-1);
   const [comment, setComment] = useState('');
@@ -105,8 +105,10 @@ export default function Home() {
           </Button>
         </Link>
         
-        <Stepper currentStep={1} />
+        <NavigationStepper activeStep={1} />
     </div>
     </div>
   );
 }
+
+export default Home;

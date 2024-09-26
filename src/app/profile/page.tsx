@@ -1,10 +1,12 @@
-import Stepper from '../components/Stepper';
+import NavigationStepper from '../components/NavigationStepper';
 
-export default function Profile() {
+const Profile = () => {
   return (
     <div>
-      <Stepper currentStep={5} />
+      <NavigationStepper activeStep={5} />
       {/* Aquí va el contenido de las metas */}
     </div>
   );
 }
+
+export default Profile;

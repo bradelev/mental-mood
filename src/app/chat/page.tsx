@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import Stepper from "../components/Stepper";
 
 export default function Chat() {

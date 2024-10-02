@@ -4,8 +4,15 @@ import { formatDistanceToNow } from 'date-fns';
 
 import Link from 'next/link';
 
+interface Chat {
+  id: number;
+  title: string;
+  lastUpdated: Date;
+  status: string;
+}
+
 // Mock data para los chats (esto debería venir de una API en una aplicación real)
-const chats = [
+const chats: Chat[] = [
   { id: 1, title: 'Chat 1', lastUpdated: new Date(), status: 'completed' },
   { id: 2, title: 'Chat 2', lastUpdated: new Date(Date.now() - 86400000), status: 'overdue' },
   { id: 5, title: 'Chat 5', lastUpdated: new Date(Date.now() - 26400000), status: 'overdue' },
@@ -19,7 +26,7 @@ const AllChats = () => {
     return acc;
   }, {} as Record<string, typeof chats>);
 
-  const renderChatGroup = (title: string, chats: typeof chats, borderColor: string) => (
+  const renderChatGroup = (title: string, chats: Chat[], borderColor: string) => (
     <>
       <h2 className="text-xl font-bold mt-6 mb-3">{title}</h2>
       {chats.map((chat) => (

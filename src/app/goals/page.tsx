@@ -23,14 +23,18 @@ const Goals = () => {
         <TabsContent value="all-chats">
           <Card>
             <CardContent>
-              <AllChats />
+              <div className={`tab ${activeTab === 'all-chats' ? 'active' : ''}`}>
+                <AllChats />
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
         <TabsContent value="active-chat">
           <Card>
             <CardContent>
-              <ActiveChat />
+              <div className={`tab ${activeTab === 'active-chat' ? 'active' : ''}`}>
+                <ActiveChat />
+              </div>
             </CardContent>
           </Card>
         </TabsContent>

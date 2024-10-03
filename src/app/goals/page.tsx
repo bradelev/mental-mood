@@ -1,44 +1,35 @@
 "use client";
 
-import React, { useState } from 'react';
-
+import React from 'react';
+import Link from 'next/link';
 import NavigationStepper from '../components/NavigationStepper';
-import AllChats from '../components/goals/AllChats';
-import ActiveChat from '../components/goals/ActiveChat';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
-import { Card, CardContent } from '@mui/material';
+import { Card, CardContent, List, ListItem, ListItemText } from '@mui/material';
+
+// Supongamos que tienes una lista de metas como esta:
+const goals = [
+  { id: '1', title: 'Mejorar hábitos de sueño' },
+  { id: '2', title: 'Aumentar actividad física' },
+  { id: '3', title: 'Reducir estrés' },
+  // ... más metas
+];
 
 const Goals = () => {
-  const [activeTab, setActiveTab] = useState('all-chats');
-
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Goals</h1>
+      <h1 className="text-2xl font-bold mb-4">Mis Metas</h1>
       
-      <Tabs defaultValue="all-chats" onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="all-chats">All Chats</TabsTrigger>
-          <TabsTrigger value="active-chat">Active Chat</TabsTrigger>
-        </TabsList>
-        <TabsContent value="all-chats">
-          <Card>
-            <CardContent>
-              <div className={`tab ${activeTab === 'all-chats' ? 'active' : ''}`}>
-                <AllChats />
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        <TabsContent value="active-chat">
-          <Card>
-            <CardContent>
-              <div className={`tab ${activeTab === 'active-chat' ? 'active' : ''}`}>
-                <ActiveChat />
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+      <Card>
+        <CardContent>
+          <List>
+            {goals.map((goal) => (
+              <ListItem key={goal.id} component={Link} href={`/goals/${goal.id}`}>
+                <ListItemText primary={goal.title} />
+              </ListItem>
+            ))}
+          </List>
+        </CardContent>
+      </Card>
+
       <NavigationStepper activeStep={3} />
     </div>
   );

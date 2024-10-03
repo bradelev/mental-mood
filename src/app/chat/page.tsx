@@ -1,11 +1,13 @@
 "use client";
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import NavigationStepper from "../components/NavigationStepper";
 import { Button } from '../components/ui/Button';
 import { Textarea } from '../components/ui/Textarea';
 
 const Chat = () => {
+  const router = useRouter();
   const [messages, setMessages] = useState([
     { role: 'assistant', content: '¡Hola! ¿En qué puedo ayudarte hoy?' }
   ]);
@@ -19,6 +21,10 @@ const Chat = () => {
     }
   };
 
+  const handleGenerateActionItems = () => {
+    router.push('/goals');
+  };
+
   return (
     <div className="flex h-screen bg-gray-100">
       
@@ -26,8 +32,14 @@ const Chat = () => {
       {/* Área principal de chat */}
       <div className="flex-1 flex flex-col">
         {/* Encabezado */}
-        <div className="bg-white shadow p-4">
+        <div className="bg-white shadow p-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold text-blue-900">Chat</h1>
+          <Button 
+            onClick={handleGenerateActionItems}
+            className="bg-green-500 text-white"
+          >
+            Generate action items
+          </Button>
         </div>
 
         {/* Mensajes */}

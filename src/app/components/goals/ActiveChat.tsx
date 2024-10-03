@@ -1,76 +1,119 @@
 "use client"
 
 import React, { useState, useEffect } from 'react';
-import { formatDistanceToNow } from 'date-fns';
-import { es } from 'date-fns/locale';
+import { 
+  List, 
+  ListItem, 
+  ListItemText, 
+  Checkbox, 
+  IconButton, 
+  TextField, 
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle
+} from '@mui/material';
+import { Delete as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import dayjs from 'dayjs';
 
-interface Task {
-  id: number;
+interface Subgoal {
+  id: string;
   description: string;
   dueDate: Date;
   completed: boolean;
 }
 
-interface ActiveChatProps {
-  id: string;
-}
-
-const ActiveChat = ({ id }: ActiveChatProps) => {
-  const [tasks, setTasks] = useState<Task[]>([]);
+const ActiveChat: React.FC<{ id: string }> = ({ id }) => {
+  const [subgoals, setSubgoals] = useState<Subgoal[]>([]);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [currentSubgoal, setCurrentSubgoal] = useState<Subgoal | null>(null);
 
   useEffect(() => {
-    if (id) {
-      // Aquí deberías hacer la llamada a tu API para obtener las tareas
-      // Por ahora, usaremos datos de ejemplo
-      const mockTasks: Task[] = [
-        { id: 1, description: 'Tarea 1', dueDate: new Date(Date.now() + 86400000), completed: false },
-        { id: 2, description: 'Tarea 2', dueDate: new Date(Date.now() + 172800000), completed: true },
-      ];
-      setTasks(mockTasks);
-    }
+    // Here you should load the subgoals from your backend
+    // For now, we'll use example data
+    setSubgoals([
+      { id: '1', description: 'Walk 30 minutes a day', dueDate: new Date(), completed: false },
+      { id: '2', description: 'Do yoga twice a week', dueDate: new Date(), completed: false },
+    ]);
   }, [id]);
 
-  const updateTask = (taskId: number, updates: Partial<Task>) => {
-    setTasks(tasks.map(task => 
-      task.id === taskId ? { ...task, ...updates } : task
+  const handleToggleComplete = (id: string) => {
+    setSubgoals(subgoals.map(subgoal => 
+      subgoal.id === id ? { ...subgoal, completed: !subgoal.completed } : subgoal
     ));
   };
 
-  const deleteTask = (taskId: number) => {
-    setTasks(tasks.filter(task => task.id !== taskId));
+  const handleEdit = (subgoal: Subgoal) => {
+    setCurrentSubgoal(subgoal);
+    setOpenDialog(true);
   };
 
-  const allTasksCompleted = tasks.every(task => task.completed);
+  const handleDelete = (id: string) => {
+    setSubgoals(subgoals.filter(subgoal => subgoal.id !== id));
+  };
+
+  const handleSave = () => {
+    if (currentSubgoal) {
+      setSubgoals(subgoals.map(subgoal => 
+        subgoal.id === currentSubgoal.id ? currentSubgoal : subgoal
+      ));
+      setOpenDialog(false);
+      setCurrentSubgoal(null);
+    }
+  };
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4">Chat {id}</h1>
-      <p className="mb-4">Estado: {allTasksCompleted ? 'Completado' : 'En progreso'}</p>
-      {tasks.map(task => (
-        <div key={task.id} className="border p-4 mb-4 rounded">
-          <input
-            type="checkbox"
-            checked={task.completed}
-            onChange={(e) => updateTask(task.id, { completed: e.target.checked })}
-            className="mr-2"
+      <h2>Subgoals for Increasing Physical Activity</h2>
+      <List>
+        {subgoals.map((subgoal) => (
+          <ListItem key={subgoal.id} disablePadding>
+            <Checkbox
+              checked={subgoal.completed}
+              onChange={() => handleToggleComplete(subgoal.id)}
+            />
+            <ListItemText 
+              primary={subgoal.description}
+              secondary={`Due date: ${subgoal.dueDate.toLocaleDateString()}`}
+            />
+            <IconButton onClick={() => handleEdit(subgoal)}>
+              <EditIcon />
+            </IconButton>
+            <IconButton onClick={() => handleDelete(subgoal.id)}>
+              <DeleteIcon />
+            </IconButton>
+          </ListItem>
+        ))}
+      </List>
+
+      <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+        <DialogTitle>Edit Subgoal</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Description"
+            fullWidth
+            value={currentSubgoal?.description || ''}
+            onChange={(e) => setCurrentSubgoal(prev => prev ? {...prev, description: e.target.value} : null)}
           />
-          <input
-            value={task.description}
-            onChange={(e) => updateTask(task.id, { description: e.target.value })}
-            className="mb-2 p-1 border rounded"
-          />
-          <input
-            type="date"
-            value={task.dueDate.toISOString().split('T')[0]}
-            onChange={(e) => updateTask(task.id, { dueDate: new Date(e.target.value) })}
-            className="mb-2 p-1 border rounded"
-          />
-          <p>Vence: {formatDistanceToNow(task.dueDate, { addSuffix: true, locale: es })}</p>
-          <button onClick={() => deleteTask(task.id)} className="mt-2 p-1 bg-red-500 text-white rounded">
-            Eliminar
-          </button>
-        </div>
-      ))}
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <DatePicker
+          label="Due Date"
+          value={currentSubgoal?.dueDate ? dayjs(currentSubgoal.dueDate) : null}
+          onChange={(newValue) => setCurrentSubgoal(prev => prev ? {...prev, dueDate: newValue ? newValue.toDate() : new Date()} : null)}
+        />
+      </LocalizationProvider>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
+          <Button onClick={handleSave}>Save</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

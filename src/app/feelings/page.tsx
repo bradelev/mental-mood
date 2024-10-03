@@ -78,7 +78,7 @@ const Home = () => {
                 key={index}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
-                animate={{ scale: selectedIcon === index ? 1.2 : 1 }}
+                animate={{ scale: selectedIcon === index ? 1.5 : 1 }}
                 transition={{ duration: 0.2 }}
                 className={`text-4xl ${iconData.color}`}
                 onClick={() => setSelectedIcon(index)}

@@ -4,7 +4,7 @@
 // import localFont from "next/font/local";
 import "./globals.css";
 import { usePathname } from "next/navigation";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 
 // const geistSans = localFont({
 //   src: "./fonts/GeistVF.woff",
@@ -32,17 +32,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bg-gray-100">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={pathname}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-          >
-            {children}
-          </motion.div>
-        </AnimatePresence>
+        <motion.div
+          key={pathname}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.3 }}
+        >
+          {children}
+        </motion.div>
       </body>
     </html>
   );

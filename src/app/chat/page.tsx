@@ -1,23 +1,48 @@
 "use client";
 
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import NavigationStepper from "../components/NavigationStepper";
-import { Button } from '../components/ui/Button';
-import { Textarea } from '../components/ui/Textarea';
+import { sendMessageToChatGPT } from '../../utils/chatGPTService';
+import { Message } from '@/types/chatTypes';
+import { Button } from '@/components/ui/Button';
+import { Textarea } from '@/components/ui/Textarea';
+import ReactMarkdown from 'react-markdown';
+import { Spinner } from '@/components/ui/Spinner'; // Asegúrate de crear este componente
 
 const Chat = () => {
   const router = useRouter();
-  const [messages, setMessages] = useState([
-    { role: 'assistant', content: '¡Hola! ¿En qué puedo ayudarte hoy?' }
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSendMessage = () => {
+  useEffect(() => {
+    initializeChat();
+  }, []);
+
+  const initializeChat = async () => {
+    const feelings = JSON.parse(localStorage.getItem('userFeelings') || '{}');
+    const initialMessage = await sendMessageToChatGPT('Inicia la conversación teniendo en cuenta los sentimientos del usuario.', feelings);
+    setMessages([{ role: 'assistant', content: initialMessage }]);
+  };
+
+  const handleSendMessage = async () => {
     if (inputMessage.trim() !== '') {
-      setMessages([...messages, { role: 'user', content: inputMessage }]);
+      const userMessage: Message = { role: 'user', content: inputMessage };
+      setMessages(prevMessages => [...prevMessages, userMessage]);
       setInputMessage('');
-      // Aquí iría la lógica para enviar el mensaje al backend y recibir una respuesta
+      setIsLoading(true);
+
+      try {
+        const assistantResponse = await sendMessageToChatGPT(inputMessage);
+        const assistantMessage: Message = { role: 'assistant', content: assistantResponse };
+        setMessages(prevMessages => [...prevMessages, assistantMessage]);
+      } catch (error) {
+        console.error('Error al enviar mensaje:', error);
+        // Aquí podrías añadir un mensaje de error al usuario
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -47,10 +72,21 @@ const Chat = () => {
           {messages.map((message, index) => (
             <div key={index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
               <div className={`max-w-xs md:max-w-md lg:max-w-lg xl:max-w-xl rounded-lg p-3 ${message.role === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}>
-                {message.content}
+                {message.role === 'user' ? (
+                  message.content
+                ) : (
+                  <ReactMarkdown className="prose prose-sm max-w-none">
+                    {message.content}
+                  </ReactMarkdown>
+                )}
               </div>
             </div>
           ))}
+          {isLoading && (
+            <div className="flex justify-center items-center">
+              <Spinner />
+            </div>
+          )}
         </div>
 
         {/* Input de mensaje */}
@@ -61,15 +97,17 @@ const Chat = () => {
               onChange={(e) => setInputMessage(e.target.value)}
               placeholder="Escribe tu mensaje aquí..."
               className="flex-1"
+              disabled={isLoading}
             />
-            <Button onClick={handleSendMessage} className="bg-blue-500 text-white">
-              Enviar
+            <Button 
+              onClick={handleSendMessage} 
+              className="bg-blue-500 text-white"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Enviando...' : 'Enviar'}
             </Button>
           </div>
         </div>
-
-        {/* Navigation Stepper */}
-        <NavigationStepper activeStep={2} />
       </div>
     </div>
   );

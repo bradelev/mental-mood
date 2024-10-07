@@ -3,14 +3,14 @@
 import React, { useState } from 'react';
 import * as motion from 'framer-motion/client'
 import Link from 'next/link';
-import { Button } from '../components/ui/Button';
-import { Textarea } from '../components/ui/Textarea';
+import { Button } from '../../components/ui/Button';
+import { Textarea } from '../../components/ui/Textarea';
 import SentimentVeryDissatisfiedIcon from '@mui/icons-material/SentimentVeryDissatisfied';
 import SentimentDissatisfiedIcon from '@mui/icons-material/SentimentDissatisfied';
 import SentimentSatisfiedIcon from '@mui/icons-material/SentimentSatisfied';
 import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
 import SentimentVerySatisfiedIcon from '@mui/icons-material/SentimentVerySatisfied';
-import NavigationStepper from '../components/NavigationStepper';
+import { useRouter } from 'next/navigation';
 
 const icons = [
   { icon: SentimentVeryDissatisfiedIcon, color: 'text-red-500' },
@@ -20,77 +20,62 @@ const icons = [
   { icon: SentimentVerySatisfiedIcon, color: 'text-green-600' },
 ];
 
-
-const tabs = ['work', 'health', 'relations', 'finance'];
+const categories = ['work', 'health', 'relations', 'finance'];
 
 const Home = () => {
-  const [activeTab, setActiveTab] = useState('work');
-  const [selectedIcon, setSelectedIcon] = useState<number>(-1);
+  const [selectedFeelings, setSelectedFeelings] = useState({
+    work: -1,
+    health: -1,
+    relations: -1,
+    finance: -1
+  });
   const [comment, setComment] = useState('');
+  const router = useRouter();
 
   const handleSend = () => {
-    if (selectedIcon) {
+    if (Object.values(selectedFeelings).every(feeling => feeling !== -1)) {
       const data = {
-        feeling: selectedIcon,
-        comment: comment,
-        activeTab: activeTab
+        feelings: selectedFeelings,
+        comment: comment
       };
-      console.log(data, selectedIcon);
+      localStorage.setItem('userFeelings', JSON.stringify(selectedFeelings));
+      console.log(data);
+      router.push('/chat');
     } else {
-      alert('Por favor, selecciona un emoji antes de enviar.');
+      alert('Por favor, selecciona un emoji para cada categoría antes de enviar.');
     }
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
-    <div className="w-full max-w-md bg-white rounded-3xl shadow-lg p-6 space-y-6">
-      {/* <motion.div 
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className="w-full max-w-md bg-white rounded-3xl shadow-lg p-6 space-y-6"
-      > */}
+      <div className="w-full max-w-4xl bg-white rounded-3xl shadow-lg p-6 space-y-6">
         <h1 className="text-2xl font-bold text-center text-blue-900">
-          How do you feel today?
+          ¿Cómo te sientes hoy en estas áreas?
         </h1>
 
-        <div className="flex border-b">
-          {tabs.map((tab) => (
-            <button
-              key={tab}
-              className={`flex-1 py-2 px-4 text-center ${
-                activeTab === tab
-                  ? 'border-b-2 border-blue-500 text-blue-500'
-                  : 'text-gray-500 hover:text-gray-700'
-              }`}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab}
-            </button>
+        <div className="grid grid-cols-6 gap-4">
+          {categories.map((category) => (
+            <React.Fragment key={category}>
+              <div className="font-semibold flex items-center">{category}</div>
+              {icons.map((iconData, iconIndex) => (
+                <motion.button
+                  key={`${category}-${iconIndex}`}
+                  whileHover={{ scale: 1.5 }}
+                  whileTap={{ scale: 0.9 }}
+                  animate={{ scale: selectedFeelings[category as keyof typeof selectedFeelings] === iconIndex ? 1.5 : 1 }}
+                  transition={{ duration: 0.1 }}
+                  className={`p-2 rounded-full`}
+                  onClick={() => setSelectedFeelings(prev => ({ ...prev, [category]: iconIndex }))}
+                >
+                  <iconData.icon fontSize="large" className={iconData.color} />
+                </motion.button>
+              ))}
+            </React.Fragment>
           ))}
         </div>
         
-        <div className="flex justify-between">
-          {icons.map((iconData, index) => {
-            const IconComponent = iconData.icon;
-            return (
-              <motion.button
-                key={index}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                animate={{ scale: selectedIcon === index ? 1.5 : 1 }}
-                transition={{ duration: 0.2 }}
-                className={`text-4xl ${iconData.color}`}
-                onClick={() => setSelectedIcon(index)}
-              >
-                <IconComponent fontSize="large" />
-              </motion.button>
-            );
-          })}
-        </div>
-        
         <Textarea 
-          placeholder="Additional comments" 
+          placeholder="Comentarios adicionales" 
           className="w-full" 
           value={comment}
           onChange={(e) => setComment(e.target.value)}
@@ -101,12 +86,10 @@ const Home = () => {
             className="w-full bg-blue-600 hover:bg-blue-700 text-white"
             onClick={handleSend}
           >
-            Send
+            Enviar
           </Button>
         </Link>
-        
-        <NavigationStepper activeStep={1} />
-    </div>
+      </div>
     </div>
   );
 }

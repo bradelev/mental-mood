@@ -2,7 +2,6 @@
 
 import React from 'react';
 import Link from 'next/link';
-import NavigationStepper from '../components/NavigationStepper';
 import { Card, CardContent, List, ListItem, ListItemText } from '@mui/material';
 
 // Supongamos que tienes una lista de metas como esta:
@@ -29,8 +28,6 @@ const Goals = () => {
           </List>
         </CardContent>
       </Card>
-
-      <NavigationStepper activeStep={3} />
     </div>
   );
 }

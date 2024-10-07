@@ -1,4 +1,4 @@
-import NavigationStepper from '../components/NavigationStepper';
+import NavigationStepper from '../../components/NavigationStepper';
 
 const Profile = () => {
   return (

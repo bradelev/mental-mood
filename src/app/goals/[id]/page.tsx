@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import ActiveChat from "../../components/goals/ActiveChat";
+// import ActiveChat from "../../components/goals/ActiveChat";
 import { Button } from '@mui/material';
 
 const ChatPage = ({ params }: { params: { id: string } }) => {
@@ -14,9 +14,9 @@ const ChatPage = ({ params }: { params: { id: string } }) => {
         </Button>
       </Link>
       
-      <h1 className="text-2xl font-bold mb-4">Chat de Meta</h1>
+      <h1 className="text-2xl font-bold mb-4">Chat de Meta {params.id}</h1>
       
-      <ActiveChat id={params.id} />
+      {/* <ActiveChat id={params.id} /> */}
     </div>
   );
 };

@@ -29,7 +29,14 @@ const Chat = () => {
     const feelings = JSON.parse(localStorage.getItem('userFeelings') || '{}');
     const comment = localStorage.getItem('userComment') || '';
     const initialMessage = await sendMessageToChatGPT('Inicia la conversación teniendo en cuenta los sentimientos del usuario.', feelings, comment);
-    setMessages([{ role: 'assistant', content: initialMessage }]);
+    try {
+      const parsedMsg = JSON.parse(initialMessage);
+      // const msg = (parsedMsg.list && parsedMsg.list.list.length > 0) ? parsedMsg.list.list : parsedMsg;
+      setMessages([{ role: 'assistant', content: parsedMsg.message }]);
+    } catch (error) {
+      console.error('Error al parsear la respuesta JSON:', error);
+      setMessages([{ role: 'assistant', content: initialMessage }]);
+    }
   };
 
   const handleSendMessage = async () => {
@@ -52,7 +59,7 @@ const Chat = () => {
         const assistantMessage: Message = { role: 'assistant', content: parsedResponse.message };
         setMessages(prevMessages => [...prevMessages, assistantMessage]);
 
-        if (parsedResponse.list && parsedResponse.list.list.length > 0) {
+        if (parsedResponse?.list?.list?.length > 0) {
           setActionItems(parsedResponse.list.list);
           setShowActionItemsButton(true);
         } else {
@@ -77,7 +84,7 @@ const Chat = () => {
 
   const ActionItemsModal = () => (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-lg w-96 max-h-[80vh] overflow-y-auto">
+      <div className="bg-white p-6 rounded-lg w-10/12 max-h-[80vh] overflow-y-auto">
         <h2 className="text-xl font-bold mb-4">Selecciona las tareas</h2>
         {actionItems.map((item, index) => (
           <div key={index} className="flex items-center mb-2">
@@ -177,7 +184,7 @@ const Chat = () => {
               <Spinner />
             </div>
           )}
-          {showActionItemsButton && (
+          {showActionItemsButton && !isLoading &&(
             <div className="flex justify-center mt-4">
               <Button 
                 onClick={handleGenerateActionItems}

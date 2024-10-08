@@ -149,14 +149,6 @@ const Chat = () => {
         {/* Encabezado */}
         <div className="bg-white shadow p-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold text-blue-900">Chat</h1>
-          {showActionItemsButton && (
-            <Button 
-              onClick={handleGenerateActionItems}
-              className="bg-green-500 text-white"
-            >
-              Generar lista de tareas
-            </Button>
-          )}
         </div>
 
         {/* Mensajes */}
@@ -183,6 +175,16 @@ const Chat = () => {
           {isLoading && (
             <div className="flex justify-center items-center">
               <Spinner />
+            </div>
+          )}
+          {showActionItemsButton && (
+            <div className="flex justify-center mt-4">
+              <Button 
+                onClick={handleGenerateActionItems}
+                className="bg-green-500 text-white"
+              >
+                Generar lista de tareas
+              </Button>
             </div>
           )}
           <div ref={messagesEndRef} /> {/* Elemento invisible al final de los mensajes */}

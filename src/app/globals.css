@@ -25,3 +25,8 @@ body {
     text-wrap: balance;
   }
 }
+
+.chat-container {
+  max-height: 80vh;
+  overflow-y: auto;
+}

@@ -19,6 +19,7 @@ interface Feelings {
   health: number;
   relations: number;
   finance: number;
+  description: string;
 }
 
 const systemPrompt = `
@@ -33,6 +34,18 @@ const systemPrompt = `
 - Evita dar consejos médicos o psicológicos profesionales.
 - Si el usuario menciona temas sensibles o indica que necesita ayuda profesional, anímalo amablemente a buscar apoyo de un especialista.
 
+El objetivo de esta conversación es poder crear un plan de acción para el usuario.
+Cuando lo consideres oportuno, plantea una meta al usuario y pide que lo evalúe.
+Esa meta debe contener items como para agregar a una to do list.
+El formato de las respuestas debe ser un objeto JSON con el siguiente formato:
+{
+  "message": "Mensaje de respuesta del asistente",
+  "list": {
+    "title": "Título de la lista",
+    "list": ["Item 1", "Item 2", "Item 3", ...]
+  }
+}
+list viene con contenido solo si se está proponiendo una lista de tareas.
 Recuerda adaptar tu lenguaje y estilo de comunicación al del usuario para crear una experiencia más personalizada y efectiva.
 `;
 
@@ -41,7 +54,7 @@ let conversationHistory: Message[] = [
   { role: "system", content: systemPrompt }
 ];
 
-export async function sendMessageToChatGPT(message: string, feelings?: Feelings): Promise<string> {
+export async function sendMessageToChatGPT(message: string, feelings?: Feelings, comment?: string): Promise<string> {
   const apiKey = process.env.OPENAI_API_KEY;
   const apiUrl = 'https://api.openai.com/v1/chat/completions';
 
@@ -51,12 +64,14 @@ export async function sendMessageToChatGPT(message: string, feelings?: Feelings)
     Salud: ${feelings.health}/4
     Relaciones: ${feelings.relations}/4
     Finanzas: ${feelings.finance}/4
+    Descripción del sentimiento: ${comment}
     Por favor, ten en cuenta esta información al iniciar la conversación y ofrecer apoyo.`;
     
     conversationHistory.push({ role: "user", content: feelingsMessage });
+  } else {
+    conversationHistory.push({ role: "user", content: message });
   }
 
-  conversationHistory.push({ role: "user", content: message });
 
   const payload = {
     model: "gpt-4o-mini",

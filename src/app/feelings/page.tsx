@@ -39,6 +39,7 @@ const Home = () => {
         comment: comment
       };
       localStorage.setItem('userFeelings', JSON.stringify(selectedFeelings));
+      localStorage.setItem('userComment', comment);
       console.log(data);
       router.push('/chat');
     } else {

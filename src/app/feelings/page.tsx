@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import * as motion from 'framer-motion/client'
-import Link from 'next/link';
 import { Button } from '../../components/ui/Button';
 import { Textarea } from '../../components/ui/Textarea';
 import SentimentVeryDissatisfiedIcon from '@mui/icons-material/SentimentVeryDissatisfied';
@@ -11,6 +10,8 @@ import SentimentSatisfiedIcon from '@mui/icons-material/SentimentSatisfied';
 import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
 import SentimentVerySatisfiedIcon from '@mui/icons-material/SentimentVerySatisfied';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { toast } from 'react-hot-toast';
 
 const icons = [
   { icon: SentimentVeryDissatisfiedIcon, color: 'text-red-500' },
@@ -22,7 +23,7 @@ const icons = [
 
 const categories = ['work', 'health', 'relations', 'finance'];
 
-const Home = () => {
+const Feelings = () => {
   const [selectedFeelings, setSelectedFeelings] = useState({
     work: -1,
     health: -1,
@@ -30,6 +31,7 @@ const Home = () => {
     finance: -1
   });
   const [comment, setComment] = useState('');
+  const [error, setError] = useState('');
   const router = useRouter();
 
   const handleSend = () => {
@@ -43,7 +45,11 @@ const Home = () => {
       console.log(data);
       router.push('/chat');
     } else {
-      alert('Por favor, selecciona un emoji para cada categoría antes de enviar.');
+      setError('Por favor, selecciona un emoji para cada categoría antes de enviar.');
+      toast.error('Faltan seleccionar emojis', {
+        duration: 3000,
+        position: 'top-center',
+      });
     }
   };
 
@@ -82,17 +88,23 @@ const Home = () => {
           onChange={(e) => setComment(e.target.value)}
         />
 
-        <Link href="/chat" passHref>
+        {error && (
+          <div className="text-red-500 text-sm mb-4 p-2 bg-red-100 rounded-md">
+            {error}
+          </div>
+        )}
+
+        {/* <Link href="/chat" passHref> */}
           <Button 
             className="w-full bg-blue-600 hover:bg-blue-700 text-white"
             onClick={handleSend}
           >
             Enviar
           </Button>
-        </Link>
+        {/* </Link> */}
       </div>
     </div>
   );
 }
 
-export default Home;
+export default Feelings;

@@ -1,14 +1,16 @@
 "use client";
 
-
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { sendMessageToChatGPT } from '../../utils/chatGPTService';
 import { Message } from '@/types/chatTypes';
 import { Button } from '@/components/ui/Button';
 import { Textarea } from '@/components/ui/Textarea';
 import ReactMarkdown from 'react-markdown';
-import { Spinner } from '@/components/ui/Spinner'; // Asegúrate de crear este componente
+import { Spinner } from '@/components/ui/Spinner';
+import { Home, Send, List } from 'lucide-react';
 
 const Chat = () => {
   const router = useRouter();
@@ -39,7 +41,7 @@ const Chat = () => {
     }
   };
 
-  const handleSendMessage = async () => {
+  const handleSendMessage = useCallback(async () => {
     if (inputMessage.trim() !== '') {
       const userMessage: Message = { role: 'user', content: inputMessage };
       setMessages(prevMessages => [...prevMessages, userMessage]);
@@ -73,7 +75,22 @@ const Chat = () => {
         setIsLoading(false);
       }
     }
-  };
+  }, [inputMessage]); // Añade otras dependencias si es necesario
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
+        event.preventDefault();
+        handleSendMessage();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [handleSendMessage]); 
 
   const handleGenerateActionItems = () => {
     if (actionItems.length > 0) {
@@ -148,76 +165,91 @@ const Chat = () => {
   useEffect(scrollToBottom, [messages]);
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <motion.div 
+      initial={{ opacity: 0 }} 
+      animate={{ opacity: 1 }} 
+      transition={{ duration: 0.5 }}
+      className="flex h-screen bg-gray-100"
+    >
       {isModalOpen && <ActionItemsModal />}
 
-      {/* Área principal de chat */}
-      <div className="flex-1 flex flex-col">
-        {/* Encabezado */}
-        <div className="bg-white shadow p-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-blue-900">Chat</h1>
+      <div className="flex-1 flex flex-col max-w-4xl mx-auto w-full">
+        <div className="bg-white shadow-md p-4 flex justify-between items-center">
+          <h1 className="text-2xl font-bold text-blue-600">Chat</h1>
+          <Link href="/" className="p-2 rounded-full bg-blue-500 text-white hover:bg-blue-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50">
+            <Home size={24} />
+            <span className="sr-only">Ir a la página inicial</span>
+          </Link>
         </div>
 
-        {/* Mensajes */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {messages.map((message, index) => (
-            <div key={index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-xs md:max-w-md lg:max-w-lg xl:max-w-xl rounded-lg p-3 ${message.role === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}>
-                {message.role === 'user' ? (
-                  (() => {
-                    try {
-                      return JSON.parse(message.content).message;
-                    } catch {
-                      return message.content; // Fallback al contenido original si el parsing falla
-                    }
-                  })()
-                ) : (
-                  <ReactMarkdown className="prose prose-sm max-w-none">
-                    {message.content}
-                  </ReactMarkdown>
-                )}
+            <motion.div 
+              key={index} 
+              initial={{ opacity: 0, y: 20 }} 
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+            >
+              <div className={`max-w-xs md:max-w-md lg:max-w-lg xl:max-w-xl rounded-lg p-3 ${message.role === 'user' ? 'bg-blue-500 text-white' : 'bg-white shadow-md'}`}>
+              <ReactMarkdown 
+    className={`prose prose-sm max-w-none ${message.role === 'user' ? 'text-white prose-invert' : ''}`}
+  >
+                  {message.content}
+                </ReactMarkdown>
               </div>
-            </div>
+            </motion.div>
           ))}
           {isLoading && (
             <div className="flex justify-center items-center">
               <Spinner />
             </div>
           )}
-          {showActionItemsButton && !isLoading &&(
-            <div className="flex justify-center mt-4">
+          {showActionItemsButton && !isLoading && (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }} 
+              animate={{ opacity: 1, y: 0 }}
+              className="flex justify-center mt-4"
+            >
               <Button 
                 onClick={handleGenerateActionItems}
-                className="bg-green-500 text-white"
+                className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-full shadow-md transition duration-300 ease-in-out transform hover:scale-105 flex items-center"
               >
+                <List className="mr-2" size={20} />
                 Generar lista de tareas
               </Button>
-            </div>
+            </motion.div>
           )}
-          <div ref={messagesEndRef} /> {/* Elemento invisible al final de los mensajes */}
+          <div ref={messagesEndRef} />
         </div>
 
-        {/* Input de mensaje */}
-        <div className="bg-white p-4">
+        <div className="bg-white p-4 shadow-md">
           <div className="flex space-x-2">
             <Textarea 
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               placeholder="Escribe tu mensaje aquí..."
-              className="flex-1"
+              className="flex-1 resize-none"
               disabled={isLoading}
             />
             <Button 
               onClick={handleSendMessage} 
-              className="bg-blue-500 text-white"
+              className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-full shadow-md transition duration-300 ease-in-out transform hover:scale-105 flex items-center"
               disabled={isLoading}
             >
-              {isLoading ? 'Enviando...' : 'Enviar'}
+              {isLoading ? (
+                <div className="text-white">
+                  <Spinner />
+                </div>
+              ) : (
+                <Send size={20} />
+              )}
+              <span className="ml-2 sr-only">Enviar</span>
             </Button>
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 

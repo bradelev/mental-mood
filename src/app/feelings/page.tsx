@@ -10,7 +10,6 @@ import SentimentSatisfiedIcon from '@mui/icons-material/SentimentSatisfied';
 import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
 import SentimentVerySatisfiedIcon from '@mui/icons-material/SentimentVerySatisfied';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { toast } from 'react-hot-toast';
 
 const icons = [

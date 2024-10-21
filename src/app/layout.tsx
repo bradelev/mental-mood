@@ -5,6 +5,7 @@
 import "./globals.css";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
+import { Toaster } from "react-hot-toast";
 
 // const geistSans = localFont({
 //   src: "./fonts/GeistVF.woff",
@@ -40,6 +41,7 @@ export default function RootLayout({
           transition={{ duration: 0.3 }}
         >
           {children}
+          <Toaster />
         </motion.div>
       </body>
     </html>

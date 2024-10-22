@@ -74,9 +74,9 @@ const GoalDetail = ({ params }: { params: { id: string } }) => {
       const newTask = {
         id: Date.now().toString(),
         description: newTaskDescription.trim(),
-        status: 'pending' as const
+        status: 'incomplete' as const
       };
-      const updatedTasks = [...goal.goals, newTask];
+      const updatedTasks = [...(goal.goals ?? []), newTask];
       try {
         const updatedGoal = await updateGoal(goal.id, { goals: updatedTasks });
         if (updatedGoal) {
@@ -93,19 +93,19 @@ const GoalDetail = ({ params }: { params: { id: string } }) => {
 
   const handleToggleTask = async (taskId: string) => {
     if (goal) {
-      const updatedTasks = goal.goals.map(task => 
-        task.id === taskId ? { ...task, status: task.status === 'complete' ? 'pending' as const : 'complete' as const } : task
-      );
-      try {
-        const updatedGoal = await updateGoal(goal.id, { goals: updatedTasks });
-        if (updatedGoal) {
-          setGoal(updatedGoal);
-          message.success('Estado de la subtarea actualizado con éxito');
-        }
-      } catch (error) {
-        console.error('Error al actualizar el estado de la subtarea:', error);
-        message.error('Error al actualizar el estado de la subtarea');
-      }
+      // const updatedTasks = goal?.goals?.map(task => 
+      //   task.id === taskId ? { ...task, status: task.status === 'complete' ? 'incomplete' : 'complete' } : task
+      // );
+      // try {
+      //   const updatedGoal = await updateGoal(goal.id, { goals: updatedTasks });
+      //   if (updatedGoal) {
+      //     setGoal(updatedGoal);
+      //     message.success('Estado de la subtarea actualizado con éxito');
+      //   }
+      // } catch (error) {
+      //   console.error('Error al actualizar el estado de la subtarea:', error);
+      //   message.error('Error al actualizar el estado de la subtarea');
+      // }
     }
   };
 

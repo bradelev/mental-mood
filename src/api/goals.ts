@@ -5,7 +5,7 @@ export interface Goal {
   user_id: string;
   id: string;
   goal: string;
-  goals?: {
+  goals: {
     id: string;
     description: string;
     status: 'complete' | 'incomplete';

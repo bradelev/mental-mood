@@ -5,7 +5,12 @@
 import "./globals.css";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
+import { ConfigProvider } from 'antd';
+import esES from 'antd/lib/locale/es_ES';
 import { Toaster } from "react-hot-toast";
+
+// Importa los estilos de Ant Design
+import 'antd/dist/reset.css';
 
 // const geistSans = localFont({
 //   src: "./fonts/GeistVF.woff",
@@ -31,18 +36,27 @@ export default function RootLayout({
   const pathname = usePathname();
   
   return (
-    <html lang="en">
-      <body className="bg-gray-100">
-        <motion.div
-          key={pathname}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.3 }}
+    <html lang="es">
+      <body>
+        <ConfigProvider
+          locale={esES}
+          theme={{
+            token: {
+              fontFamily: "'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'",
+            },
+          }}
         >
-          {children}
-          <Toaster />
-        </motion.div>
+          <motion.div
+            key={pathname}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            {children}
+            <Toaster />
+          </motion.div>
+        </ConfigProvider>
       </body>
     </html>
   );

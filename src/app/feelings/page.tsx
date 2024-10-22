@@ -11,6 +11,8 @@ import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt
 import SentimentVerySatisfiedIcon from '@mui/icons-material/SentimentVerySatisfied';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
+import Link from 'next/link';
+import { ArrowLeftOutlined } from '@ant-design/icons';
 
 const icons = [
   { icon: SentimentVeryDissatisfiedIcon, color: 'text-red-500' },
@@ -54,7 +56,12 @@ const Feelings = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-4xl bg-white rounded-3xl shadow-lg p-6 space-y-6">
+      <div className="w-full max-w-4xl bg-white rounded-lg shadow-md p-6 space-y-6">
+        <Link href="/goals" className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-4">
+          <ArrowLeftOutlined style={{ marginRight: 8 }} />
+          Volver a la lista de metas
+        </Link>
+
         <h1 className="text-2xl font-bold text-center text-blue-900">
           ¿Cómo te sientes hoy en estas áreas?
         </h1>
@@ -93,14 +100,14 @@ const Feelings = () => {
           </div>
         )}
 
-        {/* <Link href="/chat" passHref> */}
+        <div className="flex justify-end items-center">
           <Button 
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+            className="bg-blue-600 hover:bg-blue-700 text-white"
             onClick={handleSend}
           >
             Enviar
           </Button>
-        {/* </Link> */}
+        </div>
       </div>
     </div>
   );

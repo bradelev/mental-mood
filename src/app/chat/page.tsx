@@ -11,6 +11,9 @@ import { Textarea } from '@/components/ui/Textarea';
 import ReactMarkdown from 'react-markdown';
 import { Spinner } from '@/components/ui/Spinner';
 import { Home, Send, List } from 'lucide-react';
+import { Modal, Checkbox, Button as AntButton, Typography, Space } from 'antd';
+
+const { Title } = Typography;
 
 const Chat = () => {
   const router = useRouter();
@@ -100,37 +103,44 @@ const Chat = () => {
   };
 
   const ActionItemsModal = () => (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-lg w-10/12 max-h-[80vh] overflow-y-auto">
-        <h2 className="text-xl font-bold mb-4">Selecciona las tareas</h2>
+    <Modal
+      title={<Title level={4}>Selecciona las tareas</Title>}
+      open={isModalOpen}
+      onCancel={() => setIsModalOpen(false)}
+      footer={[
+        <AntButton key="cancel" type="text" onClick={() => setIsModalOpen(false)}>
+          Cancelar
+        </AntButton>,
+        <AntButton key="confirm" type="primary" onClick={handleConfirmActionItems}>
+          Confirmar
+        </AntButton>,
+      ]}
+      width="80%"
+      styles={{
+        body: {
+          maxHeight: '60vh',
+          overflowY: 'auto',
+        },
+      }}
+    >
+      <Space direction="vertical" style={{ width: '100%' }}>
         {actionItems.map((item, index) => (
-          <div key={index} className="flex items-center mb-2">
-            <input
-              type="checkbox"
-              id={`task-${index}`}
-              checked={selectedItems.includes(item)}
-              onChange={() => {
-                setSelectedItems(prev =>
-                  prev.includes(item)
-                    ? prev.filter(i => i !== item)
-                    : [...prev, item]
-                );
-              }}
-              className="mr-2"
-            />
-            <label htmlFor={`task-${index}`}>{item}</label>
-          </div>
+          <Checkbox
+            key={index}
+            checked={selectedItems.includes(item)}
+            onChange={(e) => {
+              setSelectedItems(prev =>
+                e.target.checked
+                  ? [...prev, item]
+                  : prev.filter(i => i !== item)
+              );
+            }}
+          >
+            {item}
+          </Checkbox>
         ))}
-        <div className="flex justify-end mt-4">
-          <Button onClick={handleConfirmActionItems} className="bg-green-500 text-white mr-2">
-            Confirmar
-          </Button>
-          <Button onClick={() => setIsModalOpen(false)} className="bg-gray-300">
-            Cancelar
-          </Button>
-        </div>
-      </div>
-    </div>
+      </Space>
+    </Modal>
   );
   
 

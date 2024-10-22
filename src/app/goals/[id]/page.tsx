@@ -91,6 +91,7 @@ const GoalDetail = ({ params }: { params: { id: string } }) => {
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleToggleTask = async (taskId: string) => {
     if (goal) {
       // const updatedTasks = goal?.goals?.map(task => 

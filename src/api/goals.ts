@@ -2,27 +2,38 @@ import axios from 'axios';
 import { mockGoals, findGoalById, addGoal, updateGoal as updateMockGoal, deleteGoal as deleteMockGoal } from '../mocks/goalsMockData';
 
 export interface Goal {
-  userId: string;
+  user_id: string;
   id: string;
-  title: string;
-  goals: {
+  goal: string;
+  goals?: {
     id: string;
     description: string;
-    status: 'pending' | 'complete' | 'deleted';
+    status: 'complete' | 'incomplete';
   }[];
-  status: 'pending' | 'complete' | 'deleted';
+  // Añade aquí otras propiedades que pueda tener el objeto Goal
 }
 
-const API_BASE_URL = 'https://tu-api-base-url.com';
-const USE_MOCK_DATA = true; // Cambia esto a false cuando quieras usar la API real
+const API_BASE_URL = "http://ec2-54-92-209-40.compute-1.amazonaws.com";
+const USE_MOCK_DATA = false;
 
-// Obtener todas las metas
 export const getAllGoals = async (): Promise<Goal[]> => {
   if (USE_MOCK_DATA) {
     return Promise.resolve(mockGoals);
   }
-  const response = await axios.get(`${API_BASE_URL}/goals`);
-  return response.data;
+  try {
+    const user_id = "pepe@arionkoder.com"; // Reemplaza esto con el ID de usuario real o obténlo de alguna manera
+    const response = await axios.get(`${API_BASE_URL}/goals/${user_id}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    });
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error al obtener las metas:', error);
+    throw error;
+  }
 };
 
 // Obtener una meta por ID

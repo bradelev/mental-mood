@@ -24,6 +24,7 @@ const Chat = () => {
   const [actionItems, setActionItems] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [title, setTitle] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -67,9 +68,14 @@ const Chat = () => {
         if (parsedResponse?.list?.list?.length > 0) {
           setActionItems(parsedResponse.list.list);
           setShowActionItemsButton(true);
+          // Agregar el título
+          if (parsedResponse.list.title) {
+            setTitle(parsedResponse.list.title);
+          }
         } else {
           setShowActionItemsButton(false);
           setActionItems([]);
+          setTitle(''); // Limpiar el título si no hay lista
         }
       } catch (error) {
         console.error('Error al enviar mensaje:', error);
@@ -102,9 +108,9 @@ const Chat = () => {
     }
   };
 
-  const ActionItemsModal = () => (
+  const ActionItemsModal: React.FC<{ title: string }> = ({ title }) => (
     <Modal
-      title={<Title level={4}>Selecciona las tareas</Title>}
+      title={<Title level={4}>{title}</Title>}
       open={isModalOpen}
       onCancel={() => setIsModalOpen(false)}
       footer={[
@@ -146,19 +152,23 @@ const Chat = () => {
 
   const handleConfirmActionItems = async () => {
     try {
-      const response = await fetch('/api/goals', {
+      const body = {
+        goal: title,
+        user_id: 'pepe@arionkoder.com',
+        goals: selectedItems,
+      };
+      console.log('body', body);
+      const response = await fetch('http://ec2-54-92-209-40.compute-1.amazonaws.com/goals', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          title: 'Nuevas tareas',
-          tasks: selectedItems,
-        }),
+        body: JSON.stringify(body),
       });
 
       if (response.ok) {
         localStorage.setItem('actionItems', JSON.stringify(selectedItems));
+        localStorage.setItem('goalTitle', title); // Guardamos el título en localStorage
         router.push('/goals');
       } else {
         console.error('Error al crear las tareas');
@@ -181,7 +191,7 @@ const Chat = () => {
       transition={{ duration: 0.5 }}
       className="flex h-screen bg-gray-100"
     >
-      {isModalOpen && <ActionItemsModal />}
+      {isModalOpen && <ActionItemsModal title={title} />}
 
       <div className="flex-1 flex flex-col max-w-4xl mx-auto w-full">
         <div className="bg-white shadow-md p-4 flex justify-between items-center">

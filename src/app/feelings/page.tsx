@@ -37,9 +37,11 @@ const Feelings = () => {
 
   const handleSend = () => {
     if (Object.values(selectedFeelings).every(feeling => feeling !== -1)) {
+      const userId = localStorage.getItem('userId') || 'pepe@arionkoder.com';
       const data = {
         feelings: selectedFeelings,
-        comment: comment
+        comment: comment,
+        user_id: userId
       };
       localStorage.setItem('userFeelings', JSON.stringify(selectedFeelings));
       localStorage.setItem('userComment', comment);

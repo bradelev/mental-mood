@@ -2,9 +2,9 @@ import { Goal } from '../api/goals';
 
 export const mockGoals: Goal[] = [
   {
-    userId: "user1",
+    user_id: "user1",
     id: "goal1",
-    title: "Aprender un nuevo idioma",
+    goal: "Aprender un nuevo idioma",
     goals: [
       {
         id: "subgoal1",
@@ -14,33 +14,31 @@ export const mockGoals: Goal[] = [
       {
         id: "subgoal2",
         description: "Practicar conversación",
-        status: "pending"
+        status: "incomplete"
       }
-    ],
-    status: "pending"
+    ]
   },
   {
-    userId: "user1",
+    user_id: "user1",
     id: "goal2",
-    title: "Hacer ejercicio regularmente",
+    goal: "Hacer ejercicio regularmente",
     goals: [
       {
         id: "subgoal3",
         description: "Correr 3 veces por semana",
-        status: "pending"
+        status: "incomplete"
       },
       {
         id: "subgoal4",
         description: "Hacer yoga los fines de semana",
         status: "complete"
       }
-    ],
-    status: "pending"
+    ]
   },
   {
-    userId: "user2",
+    user_id: "user2",
     id: "goal3",
-    title: "Leer 12 libros este año",
+    goal: "Leer 12 libros este año",
     goals: [
       {
         id: "subgoal5",
@@ -50,10 +48,9 @@ export const mockGoals: Goal[] = [
       {
         id: "subgoal6",
         description: "Leer una biografía",
-        status: "pending"
+        status: "incomplete"
       }
-    ],
-    status: "pending"
+    ]
   }
 ];
 

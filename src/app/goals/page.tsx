@@ -63,16 +63,16 @@ const Goals = () => {
                   title={
                     <Space>
                       <AimOutlined />
-                      <Text strong>{goal.title}</Text>
+                      <Text strong>{goal.goal}</Text>
                     </Space>
                   }
                   extra={<ArrowRightOutlined />}
                 >
                   <Text>
-                    {goal.goals.length} subtareas | {goal.goals.filter(t => t.status === 'complete').length} completadas
+                    {goal.goals?.length} subtareas | {goal.goals?.filter(t => t.status === 'complete').length} completadas
                   </Text>
                   <Progress 
-                    percent={Math.round((goal.goals.filter(t => t.status === 'complete').length / goal.goals.length) * 100)}
+                    percent={Math.round((goal.goals?.filter(t => t.status === 'complete').length ?? 0) / (goal.goals?.length ?? 1) * 100)}
                     status="active"
                   />
                 </Card>

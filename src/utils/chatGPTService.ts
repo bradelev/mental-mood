@@ -80,6 +80,7 @@ export async function sendMessageToChatGPT(message: string, feelings?: Feelings,
   };
 
   try {
+    console.log('payload', payload);
     const response = await axios.post<ChatGPTResponse>(apiUrl, payload, {
       headers: {
         'Authorization': `Bearer ${apiKey}`,

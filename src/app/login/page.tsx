@@ -12,16 +12,17 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const onFinish = async () => {
+  const onFinish = async (values: { username: string }) => {
     setIsLoading(true);
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      message.success('Inicio de sesión exitoso');
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      localStorage.setItem('username', values.username);
+      message.success('Login successful');
       router.push('/goals');
     } catch (error) {
-      console.error('Error de inicio de sesión:', error);
-      message.error('Error al iniciar sesión. Por favor, intenta de nuevo.');
+      console.error('Login error:', error);
+      message.error('Error logging in. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -35,7 +36,7 @@ const Login = () => {
       className="flex items-center justify-center min-h-screen bg-gray-100"
     >
       <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
-        <Title level={2} className="mb-6 text-blue-600 text-center">Iniciar sesión</Title>
+        <Title level={2} className="mb-6 text-blue-600 text-center">Login</Title>
         <Form
           name="login"
           initialValues={{ remember: true }}
@@ -44,13 +45,13 @@ const Login = () => {
         >
           <Form.Item
             name="username"
-            rules={[{ required: true, message: 'Por favor ingresa tu nombre de usuario' }]}
+            rules={[{ required: true, message: 'Please enter your username' }]}
           >
-            <Input prefix={<UserOutlined />} placeholder="Nombre de usuario" />
+            <Input prefix={<UserOutlined />} placeholder="Username" />
           </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit" loading={isLoading} block>
-              Iniciar sesión
+              Login
             </Button>
           </Form.Item>
         </Form>

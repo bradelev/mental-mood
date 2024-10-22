@@ -26,7 +26,7 @@ const GoalDetail = ({ params }: { params: { id: string } }) => {
         const fetchedGoal = await getGoalById(params.id);
         if (fetchedGoal) {
           setGoal(fetchedGoal);
-          setEditedTitle(fetchedGoal.title);
+          setEditedTitle(fetchedGoal.goal);
         }
       } catch (error) {
         console.error('Error al cargar la meta:', error);
@@ -43,7 +43,7 @@ const GoalDetail = ({ params }: { params: { id: string } }) => {
   const handleSaveTitle = async () => {
     if (goal && editedTitle.trim()) {
       try {
-        const updatedGoal = await updateGoal(goal.id, { title: editedTitle.trim() });
+        const updatedGoal = await updateGoal(goal.id, { goal: editedTitle.trim() });
         if (updatedGoal) {
           setGoal(updatedGoal);
           setIsEditing(false);
@@ -176,7 +176,7 @@ const GoalDetail = ({ params }: { params: { id: string } }) => {
             style={{ width: '70%' }}
           />
         ) : (
-          <Title level={2}>{goal.title}</Title>
+          <Title level={2}>{goal.goal}</Title>
         )}
         <div>
           {isEditing ? (

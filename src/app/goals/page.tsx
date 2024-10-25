@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { getAllGoals, Goal } from '@/api/goals';
+import { getAllGoals, Goal, Status } from '@/api/goals';
 import { Card, Button, Progress, Typography, Space } from 'antd';
 import { PlusOutlined, ArrowRightOutlined, AimOutlined } from '@ant-design/icons';
 
@@ -69,10 +69,10 @@ const Goals = () => {
                   extra={<ArrowRightOutlined />}
                 >
                   <Text>
-                    {goal.goals?.length} subtasks | {goal.goals?.filter(t => t.status === 'complete').length} completed
+                    {goal.goals?.length} subtasks | {goal.goals?.filter(t => t.status === Status.COMPLETE).length} completed
                   </Text>
                   <Progress 
-                    percent={Math.round((goal.goals?.filter(t => t.status === 'complete').length ?? 0) / (goal.goals?.length ?? 1) * 100)}
+                    percent={Math.round((goal.goals?.filter(t => t.status === Status.COMPLETE).length ?? 0) / (goal.goals?.length ?? 1) * 100)}
                     status="active"
                   />
                 </Card>

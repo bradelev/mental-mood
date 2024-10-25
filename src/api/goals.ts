@@ -76,7 +76,17 @@ export const updateGoal = async (id: number, goal: Partial<Goal>): Promise<Goal 
     goals: goal.goals?.map(task => task.goal)
   };
   const response = await axios.put(`${API_BASE_URL}/goals/${id}`, payload);
-  return response.data;
+  const updatedGoal = {
+    ...response.data,
+    id,
+    goals: response.data.goals.map((task: string, index: number) => ({
+      goal: task,
+      id: goal.goals?.[index]?.id || 0,
+      status: goal.goals?.[index]?.status || 0,
+    }))
+  };
+  console.log(updatedGoal);
+  return updatedGoal;
 };
 
 // Eliminar una meta (opcional, ya que mencionaste un estado 'deleted')

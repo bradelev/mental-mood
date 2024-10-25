@@ -20,7 +20,7 @@ const Goals = () => {
         const fetchedGoals = await getAllGoals();
         setGoals(fetchedGoals);
       } catch (error) {
-        console.error('Error al obtener las metas:', error);
+        console.error('Error fetching goals:', error);
       }
     };
 
@@ -38,7 +38,7 @@ const Goals = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <Title level={2} className="mb-6">Mis Metas</Title>
+        <Title level={2} className="mb-6">My Goals</Title>
         
         <Button 
           type="primary"
@@ -47,7 +47,7 @@ const Goals = () => {
           size="large"
           className="mb-8"
         >
-          Iniciar nueva conversación
+          Start new conversation
         </Button>
         
         <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
@@ -69,7 +69,7 @@ const Goals = () => {
                   extra={<ArrowRightOutlined />}
                 >
                   <Text>
-                    {goal.goals?.length} subtareas | {goal.goals?.filter(t => t.status === 'complete').length} completadas
+                    {goal.goals?.length} subtasks | {goal.goals?.filter(t => t.status === 'complete').length} completed
                   </Text>
                   <Progress 
                     percent={Math.round((goal.goals?.filter(t => t.status === 'complete').length ?? 0) / (goal.goals?.length ?? 1) * 100)}
@@ -88,12 +88,12 @@ const Goals = () => {
             transition={{ delay: 0.5 }}
             className="text-center mt-12"
           >
-            <Text className="mb-4">Aún no tienes metas. ¡Comienza una nueva conversación para crear tus primeras metas!</Text>
+            <Text className="mb-4">{'You don\'t have any goals yet. Start a new conversation to create your first goals!'}</Text>
             <Button 
               type="primary"
               onClick={handleNewConversation}
             >
-              Crear mi primera meta
+              Create my first goal
             </Button>
           </motion.div>
         )}

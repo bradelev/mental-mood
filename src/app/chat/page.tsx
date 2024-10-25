@@ -34,13 +34,12 @@ const Chat = () => {
   const initializeChat = async () => {
     const feelings = JSON.parse(localStorage.getItem('userFeelings') || '{}');
     const comment = localStorage.getItem('userComment') || '';
-    const initialMessage = await sendMessageToChatGPT('Inicia la conversación teniendo en cuenta los sentimientos del usuario.', feelings, comment);
+    const initialMessage = await sendMessageToChatGPT('Start the conversation taking into account the user\'s feelings.', feelings, comment);
     try {
       const parsedMsg = JSON.parse(initialMessage);
-      // const msg = (parsedMsg.list && parsedMsg.list.list.length > 0) ? parsedMsg.list.list : parsedMsg;
       setMessages([{ role: 'assistant', content: parsedMsg.message }]);
     } catch (error) {
-      console.error('Error al parsear la respuesta JSON:', error);
+      console.error('Error parsing JSON response:', error);
       setMessages([{ role: 'assistant', content: initialMessage }]);
     }
   };
@@ -115,10 +114,10 @@ const Chat = () => {
       onCancel={() => setIsModalOpen(false)}
       footer={[
         <AntButton key="cancel" type="text" onClick={() => setIsModalOpen(false)}>
-          Cancelar
+          Cancel
         </AntButton>,
         <AntButton key="confirm" type="primary" onClick={handleConfirmActionItems}>
-          Confirmar
+          Confirm
         </AntButton>,
       ]}
       width="80%"
@@ -158,7 +157,7 @@ const Chat = () => {
         goals: selectedItems,
       };
       console.log('body', body);
-      const response = await fetch('http://ec2-54-92-209-40.compute-1.amazonaws.com/goals', {
+      const response = await fetch('https://bytebusters.arionkoder.com/goals', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -198,7 +197,7 @@ const Chat = () => {
           <h1 className="text-2xl font-bold text-blue-600">Chat</h1>
           <Link href="/" className="p-2 rounded-full bg-blue-500 text-white hover:bg-blue-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50">
             <Home size={24} />
-            <span className="sr-only">Ir a la página inicial</span>
+            <span className="sr-only">Go to home page</span>
           </Link>
         </div>
 
@@ -236,7 +235,7 @@ const Chat = () => {
                 className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-full shadow-md transition duration-300 ease-in-out transform hover:scale-105 flex items-center"
               >
                 <List className="mr-2" size={20} />
-                Generar lista de tareas
+                Generate task list
               </Button>
             </motion.div>
           )}
@@ -248,7 +247,7 @@ const Chat = () => {
             <Textarea 
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
-              placeholder="Escribe tu mensaje aquí..."
+              placeholder="Type your message here..."
               className="flex-1 resize-none"
               disabled={isLoading}
             />

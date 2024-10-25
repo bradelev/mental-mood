@@ -48,8 +48,8 @@ const Feelings = () => {
       console.log(data);
       router.push('/chat');
     } else {
-      setError('Por favor, selecciona un emoji para cada categoría antes de enviar.');
-      toast.error('Faltan seleccionar emojis', {
+      setError('Please select an emoji for each category before sending.');
+      toast.error('Missing emoji selections', {
         duration: 3000,
         position: 'top-center',
       });
@@ -61,11 +61,11 @@ const Feelings = () => {
       <div className="w-full max-w-4xl bg-white rounded-lg shadow-md p-6 space-y-6">
         <Link href="/goals" className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-4">
           <ArrowLeftOutlined style={{ marginRight: 8 }} />
-          Volver a la lista de metas
+          Back to goals list
         </Link>
 
         <h1 className="text-2xl font-bold text-center text-blue-900">
-          ¿Cómo te sientes hoy en estas áreas?
+          How do you feel today in these areas?
         </h1>
 
         <div className="grid grid-cols-6 gap-4">
@@ -90,7 +90,7 @@ const Feelings = () => {
         </div>
         
         <Textarea 
-          placeholder="Comentarios adicionales" 
+          placeholder="Additional comments" 
           className="w-full" 
           value={comment}
           onChange={(e) => setComment(e.target.value)}
@@ -107,7 +107,7 @@ const Feelings = () => {
             className="bg-blue-600 hover:bg-blue-700 text-white"
             onClick={handleSend}
           >
-            Enviar
+            Send
           </Button>
         </div>
       </div>

@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { getGoalById, updateGoal, deleteGoal, Goal } from '@/api/goals';
+import { getGoalById, updateGoal, deleteGoal, Goal, Task, Status } from '@/api/goals';
 import { List, Typography, Button, Input, Popconfirm, message, Checkbox } from 'antd';
 import { EditOutlined, DeleteOutlined, SaveOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 
@@ -15,7 +15,7 @@ const GoalDetail = ({ params }: { params: { id: string } }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState('');
   const [newTaskDescription, setNewTaskDescription] = useState('');
-  const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+  const [editingTaskId, setEditingTaskId] = useState<number | null>(null);
   const [editedTaskDescription, setEditedTaskDescription] = useState('');
 
   const router = useRouter();
@@ -23,14 +23,15 @@ const GoalDetail = ({ params }: { params: { id: string } }) => {
   useEffect(() => {
     const fetchGoal = async () => {
       try {
-        const fetchedGoal = await getGoalById(params.id);
+        const fetchedGoal = await getGoalById(parseInt(params.id));
+        
         if (fetchedGoal) {
           setGoal(fetchedGoal);
           setEditedTitle(fetchedGoal.goal);
         }
       } catch (error) {
-        console.error('Error al cargar la meta:', error);
-        message.error('Error al cargar la meta');
+        console.error('Error loading goal:', error);
+        message.error('Error loading goal');
       }
     };
     fetchGoal();
@@ -47,11 +48,11 @@ const GoalDetail = ({ params }: { params: { id: string } }) => {
         if (updatedGoal) {
           setGoal(updatedGoal);
           setIsEditing(false);
-          message.success('Título de la meta actualizado con éxito');
+          message.success('Goal title updated successfully');
         }
       } catch (error) {
-        console.error('Error al actualizar el título de la meta:', error);
-        message.error('Error al actualizar el título de la meta');
+        console.error('Error updating goal title:', error);
+        message.error('Error updating goal title');
       }
     }
   };
@@ -60,57 +61,70 @@ const GoalDetail = ({ params }: { params: { id: string } }) => {
     if (goal) {
       try {
         await deleteGoal(goal.id);
-        message.success('Meta eliminada con éxito');
+        message.success('Goal deleted successfully');
         router.push('/goals');
       } catch (error) {
-        console.error('Error al eliminar la meta:', error);
-        message.error('Error al eliminar la meta');
+        console.error('Error deleting goal:', error);
+        message.error('Error deleting goal');
       }
     }
   };
 
   const handleAddTask = async () => {
     if (goal && newTaskDescription.trim()) {
-      const newTask = {
-        id: Date.now().toString(),
-        description: newTaskDescription.trim(),
-        status: 'incomplete' as const
+      const newTask: Task = {
+        id: Date.now(),
+        goal: newTaskDescription.trim(),
+        status: Status.INCOMPLETE,
+        user_id: localStorage.getItem('username') || ''
       };
       const updatedTasks = [...(goal.goals ?? []), newTask];
       try {
-        const updatedGoal = await updateGoal(goal.id, { goals: updatedTasks });
+        const payload: Partial<Goal> = {
+          id: goal.id,
+          goal: goal.goal,
+          user_id: goal.user_id,
+          goals: updatedTasks
+        };
+        const updatedGoal = await updateGoal(goal.id, payload);
         if (updatedGoal) {
           setGoal(updatedGoal);
           setNewTaskDescription('');
-          message.success('Nueva subtarea agregada con éxito');
+          message.success('New subtask added successfully');
         }
       } catch (error) {
-        console.error('Error al agregar la nueva subtarea:', error);
-        message.error('Error al agregar la nueva subtarea');
+        console.error('Error adding new subtask:', error);
+        message.error('Error adding new subtask');
       }
     }
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleToggleTask = async (taskId: string) => {
+  const handleToggleTask = async (taskId: number) => {
     if (goal) {
-      // const updatedTasks = goal?.goals?.map(task => 
-      //   task.id === taskId ? { ...task, status: task.status === 'complete' ? 'incomplete' : 'complete' } : task
-      // );
-      // try {
-      //   const updatedGoal = await updateGoal(goal.id, { goals: updatedTasks });
-      //   if (updatedGoal) {
-      //     setGoal(updatedGoal);
-      //     message.success('Estado de la subtarea actualizado con éxito');
-      //   }
-      // } catch (error) {
-      //   console.error('Error al actualizar el estado de la subtarea:', error);
-      //   message.error('Error al actualizar el estado de la subtarea');
-      // }
+      const updatedTasks = goal?.goals?.map(task => 
+        task.id === taskId ? { ...task, status: task.status === Status.COMPLETE ? Status.INCOMPLETE : Status.COMPLETE } : task
+      ) as Task[];
+
+      try {
+        const payload: Partial<Goal> = {
+          id: goal.id,
+          goal: goal.goal,
+          user_id: goal.user_id,
+          goals: updatedTasks
+        };
+        const updatedGoal = await updateGoal(goal.id, payload);
+        if (updatedGoal) {
+          setGoal(updatedGoal);
+          message.success('Subtask status updated successfully');
+        }
+      } catch (error) {
+        console.error('Error updating subtask status:', error);
+        message.error('Error updating subtask status');
+      }
     }
   };
 
-  const handleEditTask = (taskId: string, description: string) => {
+  const handleEditTask = (taskId: number, description: string) => {
     setEditingTaskId(taskId);
     setEditedTaskDescription(description);
   };
@@ -118,7 +132,7 @@ const GoalDetail = ({ params }: { params: { id: string } }) => {
   const handleSaveTask = async () => {
     if (goal && editingTaskId && editedTaskDescription.trim()) {
       const updatedTasks = goal.goals.map(task =>
-        task.id === editingTaskId ? { ...task, description: editedTaskDescription.trim() } : task
+        task.id === editingTaskId ? { ...task, goal: editedTaskDescription.trim() } : task
       );
       try {
         const updatedGoal = await updateGoal(goal.id, { goals: updatedTasks });
@@ -135,7 +149,7 @@ const GoalDetail = ({ params }: { params: { id: string } }) => {
     }
   };
 
-  const handleDeleteTask = async (taskId: string) => {
+  const handleDeleteTask = async (taskId: number) => {
     if (goal) {
       const updatedTasks = goal.goals.filter(task => task.id !== taskId);
       try {
@@ -152,7 +166,7 @@ const GoalDetail = ({ params }: { params: { id: string } }) => {
   };
 
   if (!goal) {
-    return <div>Cargando...</div>;
+    return <div>Loading...</div>;
   }
 
   return (
@@ -165,7 +179,7 @@ const GoalDetail = ({ params }: { params: { id: string } }) => {
     >
       <Link href="/goals" className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-4">
         <ArrowLeftOutlined style={{ marginRight: 8 }} />
-        Volver a la lista de metas
+        Back to goals list
       </Link>
 
       <div className="flex justify-between items-center mb-4">
@@ -182,21 +196,21 @@ const GoalDetail = ({ params }: { params: { id: string } }) => {
         <div>
           {isEditing ? (
             <Button icon={<SaveOutlined />} onClick={handleSaveTitle} type="primary">
-              Guardar
+              Save
             </Button>
           ) : (
             <Button icon={<EditOutlined />} onClick={handleEditTitle}>
-              Editar
+              Edit
             </Button>
           )}
           <Popconfirm
-            title="¿Estás seguro de que quieres eliminar esta meta?"
+            title="Are you sure you want to delete this goal?"
             onConfirm={handleDeleteGoal}
-            okText="Sí"
+            okText="Yes"
             cancelText="No"
           >
             <Button icon={<DeleteOutlined />} danger style={{ marginLeft: 8 }}>
-              Eliminar
+              Delete
             </Button>
           </Popconfirm>
         </div>
@@ -204,7 +218,7 @@ const GoalDetail = ({ params }: { params: { id: string } }) => {
 
       <List
         className="bg-gray-50 rounded-lg p-4 mb-4"
-        header={<Title level={4}>Subtareas</Title>}
+        header={<Title level={4}>Subtasks</Title>}
         dataSource={goal.goals}
         renderItem={(task) => (
           <List.Item
@@ -212,28 +226,28 @@ const GoalDetail = ({ params }: { params: { id: string } }) => {
             actions={[
               editingTaskId === task.id ? (
                 <Button key="edit" icon={<SaveOutlined />} onClick={handleSaveTask} type="link">
-                  Guardar
+                  Save
                 </Button>
               ) : (
-                <Button key="edit" icon={<EditOutlined />} onClick={() => handleEditTask(task.id, task.description)} type="link">
-                  Editar
+                <Button key="edit" icon={<EditOutlined />} onClick={() => handleEditTask(task.id, task.goal)} type="link">
+                  Edit
                 </Button>
               ),
               <Popconfirm
                 key="delete"
-                title="¿Estás seguro de que quieres eliminar esta subtarea?"
+                title="Are you sure you want to delete this subtask?"
                 onConfirm={() => handleDeleteTask(task.id)}
-                okText="Sí"
+                okText="Yes"
                 cancelText="No"
               >
                 <Button icon={<DeleteOutlined />} type="link" danger>
-                  Eliminar
+                  Delete
                 </Button>
               </Popconfirm>
             ]}
           >
             <Checkbox
-              checked={task.status === 'complete'}
+              checked={task.status === Status.COMPLETE}
               onChange={() => handleToggleTask(task.id)}
             >
               {editingTaskId === task.id ? (
@@ -244,19 +258,19 @@ const GoalDetail = ({ params }: { params: { id: string } }) => {
                   style={{ width: '100%' }}
                 />
               ) : (
-                <Typography.Text style={{ textDecoration: task.status === 'complete' ? 'line-through' : 'none' }}>
-                  {task.description}
+                <Typography.Text style={{ textDecoration: task.status === Status.COMPLETE ? 'line-through' : 'none' }}>
+                  {task.goal}
                 </Typography.Text>
               )}
             </Checkbox>
           </List.Item>
         )}
-        locale={{ emptyText: 'No hay subtareas' }}
+        locale={{ emptyText: 'No subtasks' }}
       />
 
       <div className="flex items-center">
         <Input
-          placeholder="Nueva subtarea"
+          placeholder="New subtask"
           value={newTaskDescription}
           onChange={(e) => setNewTaskDescription(e.target.value)}
           onPressEnter={handleAddTask}
@@ -267,7 +281,7 @@ const GoalDetail = ({ params }: { params: { id: string } }) => {
           onClick={handleAddTask}
           disabled={!newTaskDescription.trim()}
         >
-          Agregar
+          Add
         </Button>
       </div>
     </motion.div>

@@ -1,19 +1,29 @@
 import axios from 'axios';
 import { mockGoals, findGoalById, addGoal, updateGoal as updateMockGoal, deleteGoal as deleteMockGoal } from '../mocks/goalsMockData';
 
-export interface Goal {
-  user_id: string;
-  id: string;
-  goal: string;
-  goals: {
-    id: string;
-    description: string;
-    status: 'complete' | 'incomplete';
-  }[];
-  // Añade aquí otras propiedades que pueda tener el objeto Goal
+export enum Status {
+  INCOMPLETE = 0,
+  COMPLETE = 1,
 }
 
-const API_BASE_URL = "http://ec2-54-92-209-40.compute-1.amazonaws.com";
+export interface Task {
+  id: number;
+  goal: string;
+  user_id: string;
+  parent?: number | null;
+  status?: Status;
+};
+
+export interface Goal {
+  user_id: string;
+  id: number;
+  parent?: number | null;
+  goal: string;
+  status?: Status;
+  goals: Task[];
+}
+
+const API_BASE_URL = "https://bytebusters.arionkoder.com";
 const USE_MOCK_DATA = false;
 
 export const getAllGoals = async (): Promise<Goal[]> => {
@@ -37,12 +47,14 @@ export const getAllGoals = async (): Promise<Goal[]> => {
 };
 
 // Obtener una meta por ID
-export const getGoalById = async (id: string): Promise<Goal | undefined> => {
+export const getGoalById = async (id: number): Promise<Goal | undefined> => {
   if (USE_MOCK_DATA) {
     return Promise.resolve(findGoalById(id));
   }
-  const response = await axios.get(`${API_BASE_URL}/goals/${id}`);
-  return response.data;
+  const user_id = localStorage.getItem('username') || '';
+  const response = await axios.get(`${API_BASE_URL}/goals/${user_id}`);
+  const goal = response.data?.find((goal: Goal) => goal.id === id);
+  return goal;
 };
 
 // Crear una nueva meta
@@ -55,16 +67,20 @@ export const createGoal = async (goal: Omit<Goal, 'id'>): Promise<Goal> => {
 };
 
 // Actualizar una meta existente
-export const updateGoal = async (id: string, goal: Partial<Goal>): Promise<Goal | undefined> => {
+export const updateGoal = async (id: number, goal: Partial<Goal>): Promise<Goal | undefined> => {
   if (USE_MOCK_DATA) {
     return Promise.resolve(updateMockGoal(id, goal));
   }
-  const response = await axios.put(`${API_BASE_URL}/goals/${id}`, goal);
+  const payload = {
+    ...goal,
+    goals: goal.goals?.map(task => task.goal)
+  };
+  const response = await axios.put(`${API_BASE_URL}/goals/${id}`, payload);
   return response.data;
 };
 
 // Eliminar una meta (opcional, ya que mencionaste un estado 'deleted')
-export const deleteGoal = async (id: string): Promise<boolean> => {
+export const deleteGoal = async (id: number): Promise<boolean> => {
   if (USE_MOCK_DATA) {
     return Promise.resolve(deleteMockGoal(id));
   }

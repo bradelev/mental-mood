@@ -8,7 +8,7 @@ interface ChatGPTResponse {
   }[];
 }
 
-// Añade esta interfaz para representar un mensaje
+// Add this interface to represent a message
 interface Message {
   role: 'system' | 'user' | 'assistant';
   content: string;
@@ -23,33 +23,35 @@ interface Feelings {
 }
 
 const systemPrompt = `
-  Actúa como un coach virtual empático y servicial que ayuda a los usuarios a identificar sus sentimientos y objetivos en áreas específicas de su vida, como trabajo, salud, relaciones o finanzas. Tu objetivo es entablar una conversación amable y constructiva, haciendo preguntas abiertas que permitan al usuario reflexionar sobre sus metas y desafíos.
+  Act as an empathetic and helpful virtual coach who assists users in identifying their feelings and goals in specific areas of their life, such as work, health, relationships, or finances. Your objective is to engage in a friendly and constructive conversation, asking open-ended questions that allow the user to reflect on their goals and challenges.
 
-- Comienza saludando al usuario de manera cálida.
-- Pregunta cómo se siente y qué área le gustaría abordar hoy.
-- Escucha activamente y valida sus sentimientos.
-- Ayuda al usuario a definir objetivos claros y alcanzables.
-- Ofrece sugerencias de acciones concretas que puedan ayudarlo a avanzar.
-- Mantén un tono positivo, motivador y respetuoso en todo momento.
-- Evita dar consejos médicos o psicológicos profesionales.
-- Si el usuario menciona temas sensibles o indica que necesita ayuda profesional, anímalo amablemente a buscar apoyo de un especialista.
+- Begin by warmly greeting the user.
+- Ask how they feel and which area they'd like to address today.
+- Listen actively and validate their feelings.
+- Help the user define clear and achievable goals.
+- Offer suggestions for concrete actions that can help them move forward.
+- Maintain a positive, motivating, and respectful tone at all times.
+- Avoid giving professional medical or psychological advice.
+- If the user mentions sensitive topics or indicates they need professional help, gently encourage them to seek support from a specialist.
 
-El objetivo de esta conversación es poder crear un plan de acción para el usuario.
-Cuando lo consideres oportuno, plantea una meta al usuario y pide que lo evalúe.
-Esa meta debe contener items como para agregar a una to do list.
-El formato de las respuestas debe ser un objeto JSON con el siguiente formato:
+The goal of this conversation is to create an action plan for the user.
+When you deem it appropriate, propose a goal to the user and ask them to evaluate it.
+This goal should contain items that can be added to a to-do list.
+The format of the responses should be a JSON object with the following format:
 {
-  "message": "Mensaje de respuesta del asistente",
+  "message": "Assistant's response message",
   "list": {
-    "title": "Título de la lista",
+    "title": "List title",
     "list": ["Item 1", "Item 2", "Item 3", ...]
   }
 }
-list viene con contenido solo si se está proponiendo una lista de tareas.
-Recuerda adaptar tu lenguaje y estilo de comunicación al del usuario para crear una experiencia más personalizada y efectiva.
+The list comes with content only if a task list is being proposed.
+Please be proactive and offer suggestions for goals.
+The items in the list should have no more than 40 characters.
+Remember to adapt your language and communication style to that of the user to create a more personalized and effective experience.
 `;
 
-// Añade esta variable para almacenar el historial de la conversación
+// Add this variable to store the conversation history
 let conversationHistory: Message[] = [
   { role: "system", content: systemPrompt }
 ];
@@ -59,13 +61,13 @@ export async function sendMessageToChatGPT(message: string, feelings?: Feelings,
   const apiUrl = 'https://api.openai.com/v1/chat/completions';
 
   if (feelings && conversationHistory.length === 1) {
-    const feelingsMessage = `El usuario ha indicado sus sentimientos en las siguientes áreas:
-    Trabajo: ${feelings.work}/4
-    Salud: ${feelings.health}/4
-    Relaciones: ${feelings.relations}/4
-    Finanzas: ${feelings.finance}/4
-    Descripción del sentimiento: ${comment}
-    Por favor, ten en cuenta esta información al iniciar la conversación y ofrecer apoyo.`;
+    const feelingsMessage = `The user has indicated their feelings in the following areas:
+    Work: ${feelings.work}/4
+    Health: ${feelings.health}/4
+    Relationships: ${feelings.relations}/4
+    Finances: ${feelings.finance}/4
+    Feeling description: ${comment}
+    Please take this information into account when starting the conversation and offering support.`;
     
     conversationHistory.push({ role: "user", content: feelingsMessage });
   } else {
@@ -94,14 +96,14 @@ export async function sendMessageToChatGPT(message: string, feelings?: Feelings,
 
     return assistantResponse;
   } catch (error) {
-    console.error('Error al enviar mensaje a ChatGPT:', error);
+    console.error('Error sending message to ChatGPT:', error);
     
     const mockResponses = [
-      "Lo siento, estoy teniendo problemas para procesar tu solicitud en este momento. ¿Podrías intentarlo de nuevo más tarde?",
-      "Parece que hay un problema de conexión. Mientras tanto, ¿puedo ayudarte con algo más general?",
-      "Disculpa, no pude acceder a la información que necesitas ahora mismo. ¿Hay algo más en lo que pueda asistirte?",
-      "Estoy experimentando dificultades técnicas. ¿Te importaría reformular tu pregunta de otra manera?",
-      "Ups, algo salió mal por mi lado. ¿Podrías darme un poco más de contexto sobre tu pregunta mientras intento resolverlo?"
+      "I'm sorry, I'm having trouble processing your request at the moment. Could you try again later?",
+      "It seems there's a connection problem. In the meantime, can I help you with something more general?",
+      "I apologize, I couldn't access the information you need right now. Is there anything else I can assist you with?",
+      "I'm experiencing technical difficulties. Would you mind rephrasing your question in a different way?",
+      "Oops, something went wrong on my end. Could you give me a bit more context about your question while I try to resolve it?"
     ];
 
     const randomResponse = mockResponses[Math.floor(Math.random() * mockResponses.length)];
@@ -112,7 +114,7 @@ export async function sendMessageToChatGPT(message: string, feelings?: Feelings,
   }
 }
 
-// Añade esta función para reiniciar la conversación si es necesario
+// Add this function to reset the conversation if necessary
 export function resetConversation() {
   conversationHistory = [
     { role: "system", content: systemPrompt }

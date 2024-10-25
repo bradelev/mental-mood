@@ -1,36 +1,69 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Goal Management Project with Next.js
 
-## Getting Started
+This is a project developed with [Next.js](https://nextjs.org) that allows users to manage their goals and sub-tasks. The application includes features for creating, editing, and deleting goals, as well as interacting with a virtual assistant to help define objectives.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Goal Management**: Create, edit, and delete goals and sub-tasks.
+- **Virtual Assistant**: Interact with a virtual assistant that helps define objectives and provides suggestions.
+- **Dynamic User Interface**: Uses animations and transitions to enhance the user experience.
+- **Support for Mock Data**: Allows the use of mock data for testing and development.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Technologies Used
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Next.js**: React framework for web applications.
+- **React**: JavaScript library for building user interfaces.
+- **TypeScript**: Superset of JavaScript that adds static types.
+- **Ant Design**: UI component library for React.
+- **Framer Motion**: Library for animations in React.
+- **Axios**: HTTP client for making API requests.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Project Structure
 
-## Learn More
+- `src/api/`: Contains services for interacting with the goals API.
+- `src/app/`: Contains the application's pages and components.
+- `src/components/`: Reusable UI components.
+- `src/mocks/`: Mock data for testing.
+- `src/utils/`: Utility functions and auxiliary services.
 
-To learn more about Next.js, take a look at the following resources:
+## Installation
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Clone the repository:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+   ```bash
+   git clone https://github.com/your-username/your-repository.git
+   ```
 
-## Deploy on Vercel
+2. Navigate to the project directory:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+   ```bash
+   cd your-repository
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+3. Install the dependencies:
+
+   ```bash
+   npm install
+   ```
+
+## Usage
+
+1. Start the development server:
+
+   ```bash
+   npm run dev
+   ```
+
+2. Open [http://localhost:3000](http://localhost:3000) in your browser to view the application.
+
+## Deployment
+
+The easiest way to deploy your Next.js application is to use the [Vercel Platform](https://vercel.com/new) from the creators of Next.js.
+
+## Contributions
+
+Contributions are welcome. Please open an issue or submit a pull request with your suggestions.
+
+## License
+
+This project is licensed under the MIT License. See the `LICENSE` file for more details.
